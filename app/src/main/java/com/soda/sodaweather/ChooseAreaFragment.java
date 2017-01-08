@@ -1,9 +1,11 @@
 package com.soda.sodaweather;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +17,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.soda.sodaweather.db.City;
 import com.soda.sodaweather.db.County;
 import com.soda.sodaweather.db.Province;
+import com.soda.sodaweather.gson.Weather;
 import com.soda.sodaweather.util.HttpUtil;
 import com.soda.sodaweather.util.Utility;
 
@@ -26,6 +30,7 @@ import org.litepal.crud.DataSupport;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -80,6 +85,12 @@ public class ChooseAreaFragment extends Fragment {
                 } else if (mCurrentLevel == LEVEL_CITY) {
                     mSelectedCity = mCityList.get(position);
                     queryCounties();
+                } else if (mCurrentLevel == LEVEL_COUNTY) {
+                    String weatherId = mCountyList.get(position).getWeatherId();
+                    Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                    intent.putExtra("weather_id", weatherId);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
             }
         });
