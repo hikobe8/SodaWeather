@@ -1,0 +1,9 @@
+<litepal>
+    <dbname value="soda_weather"/>
+    <version value="1"/>
+    <list>
+        <mapping class="com.soda.sodaweather.db.City"/>
+        <mapping class="com.soda.sodaweather.db.County"/>
+        <mapping class="com.soda.sodaweather.db.Province"/>
+    </list>
+</litepal>
