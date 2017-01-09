@@ -2,17 +2,22 @@ package com.soda.sodaweather;
 
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.soda.sodaweather.gson.Forecast;
 import com.soda.sodaweather.gson.Weather;
 import com.soda.sodaweather.util.HttpUtil;
@@ -54,11 +59,20 @@ public class WeatherActivity extends AppCompatActivity {
     TextView mSportText;
     @Bind(R.id.weather_layout)
     ScrollView mWeatherLayout;
+    @Bind(R.id.bing_pic_img)
+    ImageView mBingPicImg;
     private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+   /*     if (Build.VERSION.SDK_INT >= 21) {
+            //大于5.0 设置状态栏透明
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }*/ //TODO 5.0 状态栏白色
         setContentView(R.layout.activity_weather);
         ButterKnife.bind(this);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -73,6 +87,45 @@ public class WeatherActivity extends AppCompatActivity {
             mWeatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(weatherId);
         }
+        String bingPic = sharedPreferences.getString("bing_pic", null);
+        if (bingPic != null) {
+            Glide.with(this)
+                    .load(bingPic)
+                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                    .into(mBingPicImg);
+        } else {
+            loadBingPic();
+        }
+    }
+
+    /**
+     * 获取bing每日一图
+     */
+    private void loadBingPic() {
+        String picUrl = "http://guolin.tech/api/bing_pic";
+        HttpUtil.sendOkHttpRequest(picUrl, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String bingPic = response.body().string();
+                SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
+                edit.putString("bing_pic", bingPic);
+                edit.apply();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(WeatherActivity.this)
+                                .load(bingPic)
+                                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                                .into(mBingPicImg);
+                    }
+                });
+            }
+        });
     }
 
     private void requestWeather(final String weatherId) {
@@ -122,6 +175,7 @@ public class WeatherActivity extends AppCompatActivity {
         mTitleUpdateTime.setText(updateTime);
         mDegreeText.setText(degree);
         mForecastLayout.removeAllViews();
+        mWeatherInfoText.setText(weatherInfo);
         for (Forecast forecast : weather.forecastList) {
             View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, mForecastLayout, false);
             TextView dateText = (TextView) view.findViewById(R.id.date_text);
@@ -157,7 +211,7 @@ public class WeatherActivity extends AppCompatActivity {
         mProgressDialog.show();
     }
 
-    private void dismissProgressDialog(){
+    private void dismissProgressDialog() {
         if (mProgressDialog != null)
             mProgressDialog.dismiss();
     }
