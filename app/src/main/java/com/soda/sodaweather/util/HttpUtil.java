@@ -1,5 +1,7 @@
 package com.soda.sodaweather.util;
 
+import android.util.Log;
+
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -17,7 +19,15 @@ public class HttpUtil {
      * @param callback 方法回调
      */
     public static void sendOkHttpRequest(String address, Callback callback) {
-        OkHttpClient client = new OkHttpClient();
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+            @Override public void log(String message) {
+                Log.e("OkHttp",message);
+            }
+        });
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .build();
         Request request = new Request.Builder().url(address).build();
         client.newCall(request).enqueue(callback);
     }
