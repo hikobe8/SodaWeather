@@ -5,11 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -17,11 +15,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.soda.sodaweather.db.City;
 import com.soda.sodaweather.db.County;
 import com.soda.sodaweather.db.Province;
-import com.soda.sodaweather.gson.Weather;
 import com.soda.sodaweather.util.HttpUtil;
 import com.soda.sodaweather.util.Utility;
 
@@ -30,7 +26,6 @@ import org.litepal.crud.DataSupport;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -48,7 +43,7 @@ public class ChooseAreaFragment extends Fragment {
     private ProgressDialog mProgressDialog; //加载对话框
 
     private TextView mTvTitle;
-    private Button mBtnBack;
+    Button mBtnBack;
     private ListView mListView;
     private ArrayAdapter<String> mAdapter;
     private List<String> mDataList = new ArrayList<>();
@@ -57,8 +52,7 @@ public class ChooseAreaFragment extends Fragment {
     private List<County> mCountyList; //县级列表
     private Province mSelectedProvince; // 选中的省
     private City mSelectedCity; // 选中的市
-    private County mSelectedCounty; // 选中的县
-    private int mCurrentLevel; //当前选中的级别
+    int mCurrentLevel; //当前选中的级别
 
 
     @Nullable

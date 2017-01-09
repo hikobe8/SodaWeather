@@ -1,5 +1,6 @@
 package com.soda.sodaweather;
 
+import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -69,6 +70,8 @@ public class WeatherActivity extends AppCompatActivity {
     @Bind(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
 
+    ChooseAreaFragment mChooseAreaFragment;
+
     private String mWeatherId;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,6 +85,7 @@ public class WeatherActivity extends AppCompatActivity {
         }*/ //TODO 5.0 状态栏白色
         setContentView(R.layout.activity_weather);
         ButterKnife.bind(this);
+        mChooseAreaFragment = (ChooseAreaFragment) getSupportFragmentManager().findFragmentById(R.id.choose_area_fragment);
         mSwipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         mNavButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -228,5 +232,16 @@ public class WeatherActivity extends AppCompatActivity {
         mWeatherLayout.setVisibility(View.VISIBLE);
     }
 
-
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            if (mChooseAreaFragment.mCurrentLevel != ChooseAreaFragment.LEVEL_PROVINCE) {
+                mChooseAreaFragment.mBtnBack.performClick();
+            } else {
+                mDrawerLayout.closeDrawers();
+            }
+        } else {
+            super.onBackPressed();
+        }
+    }
 }
