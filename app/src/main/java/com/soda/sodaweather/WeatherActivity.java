@@ -1,6 +1,7 @@
 package com.soda.sodaweather;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -22,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.soda.sodaweather.gson.Forecast;
 import com.soda.sodaweather.gson.Weather;
+import com.soda.sodaweather.service.AutoUpdateService;
 import com.soda.sodaweather.util.HttpUtil;
 import com.soda.sodaweather.util.Utility;
 
@@ -128,6 +130,8 @@ public class WeatherActivity extends AppCompatActivity {
         } else {
             loadBingPic();
         }
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 
     /**
