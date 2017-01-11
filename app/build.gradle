@@ -12,15 +12,16 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
-    productFlavors {
-        qihoo {
-            applicationId "com.coolweather.android.qihoo"
-        }
-
-        baidu {
-            applicationId "com.coolweather.android.baidu"
-        }
-    }
+//    productFlavors {
+//
+//        qihoo {
+//            applicationId "com.soda.sodaweather.qihoo"
+//        }
+//
+//        baidu {
+//            applicationId "com.soda.sodaweather.baidu"
+//        }
+//    }
 
     signingConfigs {
         config {
@@ -52,4 +53,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.jakewharton:butterknife:7.0.1'
+    compile files('libs/BaiduLBS_Android.jar')
 }
