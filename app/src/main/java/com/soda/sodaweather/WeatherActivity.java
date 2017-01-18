@@ -109,8 +109,10 @@ public class WeatherActivity extends AppCompatActivity {
                     //成功返回市级数据,继续查询县级数据
                     int pId = msg.arg1;
                     final int cId = msg.arg2;
-                    final String countyName = (String) msg.obj;
-                    String address = "http://guolin.tech/api/china/" + pId + cId;
+                    Bundle bundle = msg.getData();
+                    final String countyName = bundle.getString("county");
+                    final String cityName = bundle.getString("city");
+                    String address = "http://guolin.tech/api/china/" + pId + "/" + cId;
                     HttpUtil.sendOkHttpRequest(address, new okhttp3.Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {
@@ -127,6 +129,15 @@ public class WeatherActivity extends AppCompatActivity {
                                 if (first != null) {
                                     mWeatherId = first.getWeatherId();
                                     requestWeather(mWeatherId);
+                                } else {
+                                    //当前版本不支持 城市地区， 比如成都市武侯区这种直接 成都市 ，上海市浦东区这种直接上海
+                                    County defaultCounty = DataSupport.where("countyName = ?", cityName).findFirst(County.class);
+                                    if (defaultCounty != null) {
+                                        mWeatherId = defaultCounty.getWeatherId();
+                                        requestWeather(mWeatherId);
+                                    } else {
+                                        mHandler.sendEmptyMessage(2);
+                                    }
                                 }
                             }
 
@@ -138,6 +149,9 @@ public class WeatherActivity extends AppCompatActivity {
                     //成功返回县级数据开始更新天气
                     mWeatherId = (String) msg.obj;
                     requestWeather(mWeatherId);
+                    break;
+                case 2:
+                    Toast.makeText(WeatherActivity.this, "切换城市失败!", Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -418,48 +432,6 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
 
-/*    *//**
-     * 检查当前城市是否存在城市数据库
-     * 存在提示用户是否选择显示当前定位城市的天气
-     *//*
-    private void checkCityExist(String district) {
-        //egg pain 删除最后一个字来查询
-        district = district.substring(0, district.length() - 1);
-        *//**
-         * 进入weather详细页面必定已经缓存了所有省市
-         *//*
-        County foundCounty = DataSupport.where("countyName = ?", district)
-                .findFirst(County.class);
-        if (foundCounty != null) {
-            //城市存在 提示是否切换当前城市
-            showSwitchCityDialog(foundCounty);
-        }
-
-    }*/
-
-  /*  *//**
-     * 切换城市的对话框
-     * @param county 当前定位的城市
-     *//*
-    private void showSwitchCityDialog(final County county) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.app_name)
-                .setMessage("当前定位城市为 "+ county.getCountyName() +",\n" +"是否切换")
-                .setPositiveButton("切换", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mWeatherId = county.getWeatherId();
-                        requestWeather(mWeatherId);
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }).show();
-    }
-*/
     /**
      * 切换城市的对话框
      * @param locationEntity 当前定位的城市
@@ -516,9 +488,15 @@ public class WeatherActivity extends AppCompatActivity {
                             Message message = Message.obtain();
                             message.what = 0;
                             message.arg1 = foundProvince.getProvinceCode();
-                            message.arg2 = foundCity.getCityCode();// 携带当前城市id，继续查询下面的县城
-                            message.obj = location.getCounty();
+                            message.arg2 = first.getCityCode();// 携带当前城市id，继续查询下面的县城
+                            Bundle cityBundle = new Bundle();
+                            cityBundle.putString("city", first.getCityName());
+                            cityBundle.putString("county", location.getCounty());
+                            message.setData(cityBundle);
                             mHandler.sendMessage(message);
+                        } else {
+                            //查询失败
+                            mHandler.sendEmptyMessage(2);
                         }
                     }
 
@@ -553,6 +531,17 @@ public class WeatherActivity extends AppCompatActivity {
                                 message.what = 1;
                                 message.obj = first.getWeatherId(); // 携带当前城市天气id，更新天气
                                 mHandler.sendMessage(message);
+                            } else {
+                                County defaultCity = DataSupport.where("countyName = ?", foundCity.getCityName()).findFirst(County.class);
+                                if (defaultCity != null) {
+                                    Message message = Message.obtain();
+                                    message.what = 1;
+                                    message.obj = defaultCity.getWeatherId(); // 携带当前城市天气id，更新天气
+                                    mHandler.sendMessage(message);
+                                } else {
+                                    //查询失败
+                                    mHandler.sendEmptyMessage(2);
+                                }
                             }
                         }
 

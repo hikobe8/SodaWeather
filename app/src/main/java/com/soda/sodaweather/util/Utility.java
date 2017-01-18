@@ -11,6 +11,7 @@ import com.soda.sodaweather.gson.Weather;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.litepal.crud.DataSupport;
 
 
 /**
@@ -25,6 +26,7 @@ public class Utility {
      * @return
      */
     public static boolean handleProvinceResponse(String resposne) {
+        DataSupport.deleteAll(Province.class);
         if (!TextUtils.isEmpty(resposne)) {
             try {
                 JSONArray allProvinces = new JSONArray(resposne);
@@ -50,6 +52,7 @@ public class Utility {
      * @return
      */
     public static boolean handleCityResponse(String resposne, int provinceId) {
+        DataSupport.deleteAll(City.class);
         if (!TextUtils.isEmpty(resposne)) {
             try {
                 JSONArray allCities = new JSONArray(resposne);
@@ -76,6 +79,7 @@ public class Utility {
      * @return
      */
     public static boolean handleCountyResponse(String resposne, int cityId) {
+        DataSupport.deleteAll(County.class);
         if (!TextUtils.isEmpty(resposne)) {
             try {
                 JSONArray allCounties = new JSONArray(resposne);
