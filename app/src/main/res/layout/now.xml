@@ -4,6 +4,32 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:layout_margin="15dp">
+    <LinearLayout
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextClock
+            android:layout_marginTop="16dp"
+            android:id="@+id/timeText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:format24Hour="HH:mm:ss"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="40sp"
+            android:textStyle="bold"/>
+        <TextClock
+            android:id="@+id/dateText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:format12Hour="yyyy/MM/dd E"
+            android:format24Hour="yyyy/MM/dd E"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"/>
+    </LinearLayout>
+
     <TextView
         android:id="@+id/degree_text"
         android:layout_gravity="end"

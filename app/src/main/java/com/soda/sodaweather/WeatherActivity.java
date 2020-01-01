@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -98,7 +101,7 @@ public class WeatherActivity extends AppCompatActivity {
     private String mWeatherId;
 
     //定位
-    private LocationClient mLocationClient;
+//    private LocationClient mLocationClient;
 
     private Handler mHandler = new Handler(){
         @Override
@@ -162,16 +165,10 @@ public class WeatherActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mLocationClient = new LocationClient(getApplicationContext());
-   /*     if (Build.VERSION.SDK_INT >= 21) {
-            //大于5.0 设置状态栏透明
-            View decorView = getWindow().getDecorView();
-            decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
-        }*/ //TODO 5.0 状态栏白色
+//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//        mLocationClient = new LocationClient(getApplicationContext());
         setContentView(R.layout.activity_weather);
-        checkNeedPermissoion();
+        checkNeedPermission();
     }
 
     private void loadWeather(){
@@ -227,7 +224,7 @@ public class WeatherActivity extends AppCompatActivity {
     /**
      * 检查所需权限
      */
-    private void checkNeedPermissoion() {
+    private void checkNeedPermission() {
         List<String> permissionList = new ArrayList<>();
         //访问位置的权限
         if (ContextCompat.checkSelfPermission(this, Manifest
@@ -254,19 +251,19 @@ public class WeatherActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, permissions, 1);
         } else {
             //权限通过
-            requestLocation();
+//            requestLocation();
             loadWeather();
         }
     }
 
-    private void requestLocation() {
-        LocationClientOption option = new LocationClientOption();
-        option.setLocationMode(LocationClientOption.LocationMode.Device_Sensors);
-        option.setIsNeedAddress(true);
-        mLocationClient.setLocOption(option);
-        mLocationClient.registerLocationListener(new MyLocationListener());
-        mLocationClient.start();
-    }
+//    private void requestLocation() {
+//        LocationClientOption option = new LocationClientOption();
+//        option.setLocationMode(LocationClientOption.LocationMode.Device_Sensors);
+//        option.setIsNeedAddress(true);
+//        mLocationClient.setLocOption(option);
+//        mLocationClient.registerLocationListener(new MyLocationListener());
+//        mLocationClient.start();
+//    }
 
     /**
      * 获取bing每日一图
@@ -563,7 +560,7 @@ public class WeatherActivity extends AppCompatActivity {
                             Toast.makeText(this, "权限未通过"+permissions[i], Toast.LENGTH_SHORT).show();
                         }
                     }
-                    requestLocation();
+//                    requestLocation();
                     loadWeather();
                 } else {
                     Toast.makeText(this, "发生未知错误", Toast.LENGTH_SHORT).show();
